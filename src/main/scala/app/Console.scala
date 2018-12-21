@@ -11,7 +11,7 @@ trait Console[F[_]] {
 }
 
 object Console {
-  def apply[F[_]](implicit consol: Console[F]): Console[F] = consol
+  def apply[F[_]](implicit console: Console[F]): Console[F] = console
 
   val monixConsole: Console[Task] = new Console[Task] {
     def printLn(line: String): Task[Unit] =
