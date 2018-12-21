@@ -3,7 +3,7 @@ package app
 import monix.eval.Task
 
 trait Weather[F[_]] {
-  def forcast(city: City): F[Forcast]
+  def forecast(city: City): F[Forecast]
 }
 
 object Weather {
@@ -13,9 +13,9 @@ object Weather {
     new Weather[Task] {
       val client = new WeatherClient(config.host, config.port)
 
-      def forcast(city: City): Task[Forcast] =
+      def forecast(city: City): Task[Forecast] =
         Task.delay {
-          client.forcast(city)
+          client.forecast(city)
         }
     }
 }

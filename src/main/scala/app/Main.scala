@@ -39,21 +39,21 @@ object Main {
       cityName <- Console[F].readLn
     } yield cityName
 
-  def fetchForcast[F[_] : Weather : RequestsState : Monad](city: City): F[Forcast] =
+  def fetchForecast[F[_] : Weather : RequestsState : Monad](city: City): F[Forecast] =
     for {
-      maybeForcast <- implicitly[RequestsState[F]].inspect(_.get(city))
-      forcast <- maybeForcast.fold(Weather[F].forcast(city))(
+      maybeForecast <- implicitly[RequestsState[F]].inspect(_.get(city))
+      forecast <- maybeForecast.fold(Weather[F].forecast(city))(
         _.pure[F]
       )
-      _ <- implicitly[RequestsState[F]].modify(_ + (city -> forcast))
-    } yield forcast
+      _ <- implicitly[RequestsState[F]].modify(_ + (city -> forecast))
+    } yield forecast
 
   def askFetchJudge[F[_] : Console : Weather : RequestsState : ErrorHandler]: F[Unit] =
     for {
       cityName <- askCity[F]
       city <- cityByName[F](cityName)
-      forcast <- fetchForcast[F](city)
-      _ <- Console[F].printLn(s"Forcast for $city is ${forcast.temperature}")
+      forecast <- fetchForecast[F](city)
+      _ <- Console[F].printLn(s"Forecast for $city is ${forecast.temperature}")
       hottest <- hottestCity[F]
       _ <- Console[F].printLn(s"Hottest city found so far is $hottest")
     } yield ()
