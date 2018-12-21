@@ -82,9 +82,9 @@ object Main {
 
     implicit val io = Scheduler.io("io-scheduler")
 
-    (app.run(requests).run(config).value >>= {
+    (app.run(requests).run(config).value/*.loopForever*/ >>= {
       case Left(error) => console.printLn(s"Encountered an error: $error")
       case Right(_) => ().pure[Task]
-    }).runSyncUnsafe
+    }).runSyncUnsafe()
   }
 }
