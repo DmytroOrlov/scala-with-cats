@@ -6,6 +6,8 @@ import cats.mtl.{ApplicativeAsk, MonadState}
 import cats.{Monad, MonadError}
 import monix.eval.Task
 import monix.execution.Scheduler
+import mtl._
+import cats.mtl.implicits._
 
 object Main {
   type ConfigAsk[F[_]] = ApplicativeAsk[F, Config]
@@ -63,7 +65,7 @@ object Main {
       h <- host[F]
       p <- port[F]
       _ <- Console[F].printLn(s"Using weather service at http://$h:$p")
-      _ <- askFetchJudge[F]/*.forever*/
+      _ <- askFetchJudge[F].foreverM[Unit]
     } yield ()
 
   def main(args: Array[String]): Unit = {
@@ -74,17 +76,18 @@ object Main {
     type Effect1[A] = ReaderT[Effect0, Config, A]
     type Effect[A] = StateT[Effect1, Requests, A]
 
-    implicit val configAsk = mtl.constant[Task, Config](config)
-    implicit val console = Console.monixConsole
-    implicit val weather = Weather.monixWeather(config)
+    implicit val consoleEffect = Console.console[Effect]
+    implicit val weather = Weather.weather[Effect](config)
 
     val app: Effect[Unit] = program[Effect]
 
     implicit val io = Scheduler.io("io-scheduler")
 
-    (app.run(requests).run(config).value/*.loopForever*/ >>= {
-      case Left(error) => console.printLn(s"Encountered an error: $error")
-      case Right(_) => ().pure[Task]
+    (app.run(requests).run(config).value >>= {
+      case Left(error) =>
+        Console.console[Task].printLn(s"Encountered an error: $error")
+      case Right(_) =>
+        ().pure[Task]
     }).runSyncUnsafe()
   }
 }

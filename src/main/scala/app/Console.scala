@@ -1,6 +1,6 @@
 package app
 
-import monix.eval.Task
+import cats.effect.Async
 
 import scala.io.StdIn
 
@@ -13,10 +13,11 @@ trait Console[F[_]] {
 object Console {
   def apply[F[_]](implicit console: Console[F]): Console[F] = console
 
-  val monixConsole: Console[Task] = new Console[Task] {
-    def printLn(line: String): Task[Unit] =
-      Task.delay(println(line))
+  def console[F[_] : Async]: Console[F] = new Console[F] {
+    def printLn(line: String): F[Unit] =
+      Async[F].delay(println(line))
 
-    def readLn: Task[String] = Task.delay(StdIn.readLine)
+    def readLn: F[String] =
+      Async[F].delay(StdIn.readLine)
   }
 }
