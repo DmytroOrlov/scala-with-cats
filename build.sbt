@@ -26,7 +26,7 @@ lazy val `scala-with-cats` = (project in file(".")).
 libraryDependencies += {
   val version = scalaBinaryVersion.value match {
     case "2.10" => "1.0.3"
-    case _ ⇒ "1.5.0"
+    case _ ⇒ "1.6.0"
   }
   "com.lihaoyi" % "ammonite" % version % "test" cross CrossVersion.full
 }
