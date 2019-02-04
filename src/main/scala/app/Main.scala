@@ -2,22 +2,15 @@ package app
 
 import cats.data.{EitherT, StateT}
 import cats.implicits._
-import cats.mtl.{ApplicativeAsk, MonadState}
+import cats.mtl.MonadState
 import cats.{Monad, MonadError}
 import monix.eval.Task
 import monix.execution.Scheduler
 import mtl._
 import cats.mtl.implicits._
+import app.Config._
 
 object Main {
-  type ConfigAsk[F[_]] = ApplicativeAsk[F, Config]
-
-  def host[F[_] : ConfigAsk]: F[String] =
-    implicitly[ConfigAsk[F]].reader(_.host)
-
-  def port[F[_] : ConfigAsk]: F[Int] =
-    implicitly[ConfigAsk[F]].reader(_.port)
-
   type ErrorHandler[F[_]] = MonadError[F, Error]
 
   def cityByName[F[_] : ErrorHandler](cityName: String): F[City] =
