@@ -1,25 +1,16 @@
 package app
 
+import app.Config._
 import cats.data.{EitherT, StateT}
 import cats.implicits._
+import cats.mtl.implicits._
 import cats.mtl.MonadState
 import cats.{Monad, MonadError}
 import monix.eval.Task
 import monix.execution.Scheduler
 import mtl._
-import cats.mtl.implicits._
-import app.Config._
 
 object Main {
-  type ErrorHandler[F[_]] = MonadError[F, Error]
-
-  def cityByName[F[_] : ErrorHandler](cityName: String): F[City] =
-    cityName match {
-      case "Wroclaw" ⇒ City(cityName).pure[F]
-      case "Cadiz" ⇒ City(cityName).pure[F]
-      case _ ⇒ implicitly[ErrorHandler[F]].raiseError(UnknownCity(cityName))
-    }
-
   type RequestsState[F[_]] = MonadState[F, Requests]
 
   def hottestCity[F[_] : RequestsState]: F[(City, Temperature)] = {
@@ -27,12 +18,6 @@ object Main {
       Requests.hottest(reqs).map(_.temperature)
     )
   }
-
-  def askCity[F[_] : Console : Monad]: F[String] =
-    for {
-      _ <- Console[F].printLn("What is the next city?")
-      cityName <- Console[F].readLn
-    } yield cityName
 
   def fetchForecast[F[_] : Weather : RequestsState : Monad](city: City): F[Forecast] =
     for {
@@ -42,6 +27,21 @@ object Main {
       )
       _ <- implicitly[RequestsState[F]].modify(_ + (city -> forecast))
     } yield forecast
+
+  type ErrorHandler[F[_]] = MonadError[F, Error]
+
+  def cityByName[F[_] : ErrorHandler](cityName: String): F[City] =
+    cityName match {
+      case "Wroclaw" ⇒ City(cityName).pure[F]
+      case "Cadiz" ⇒ City(cityName).pure[F]
+      case _ ⇒ implicitly[ErrorHandler[F]].raiseError(UnknownCity(cityName))
+    }
+
+  def askCity[F[_] : Console : Monad]: F[String] =
+    for {
+      _ <- Console[F].printLn("What is the next city?")
+      cityName <- Console[F].readLn
+    } yield cityName
 
   def askFetchJudge[F[_] : Console : Weather : RequestsState : ErrorHandler]: F[Unit] =
     for {

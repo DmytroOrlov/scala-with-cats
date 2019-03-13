@@ -1,4 +1,4 @@
-package zio.console
+package zioapp.console
 
 import java.io.IOException
 

@@ -1,4 +1,4 @@
-package zio
+package zioapp
 
 import java.io.IOException
 
