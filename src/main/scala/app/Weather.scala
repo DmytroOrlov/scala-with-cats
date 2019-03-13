@@ -1,6 +1,6 @@
 package app
 
-import cats.effect.Async
+import cats.effect.Sync
 import cats.mtl.ApplicativeAsk
 import cats.tagless._
 import app.Config._
@@ -13,11 +13,11 @@ trait Weather[F[_]] {
 }
 
 object Weather {
-  def weather[F[_] : Async](config: Config): Weather[F] = new Weather[F] {
+  def weather[F[_] : Sync](config: Config): Weather[F] = new Weather[F] {
     implicit val configAsk = constantAsk[Id, Config](config)
     val client = new WeatherClient(host[Id], port[Id])
 
-    def forecast(city: City): F[Forecast] = Async[F].delay(client.forecast(city))
+    def forecast(city: City): F[Forecast] = Sync[F].delay(client.forecast(city))
   }
 }
 

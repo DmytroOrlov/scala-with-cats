@@ -1,6 +1,6 @@
 package app
 
-import cats.effect.Async
+import cats.effect.Sync
 import cats.tagless._
 
 import scala.io.StdIn
@@ -13,11 +13,11 @@ trait Console[F[_]] {
 }
 
 object Console {
-  def console[F[_] : Async]: Console[F] = new Console[F] {
+  def console[F[_] : Sync]: Console[F] = new Console[F] {
     def printLn(line: String): F[Unit] =
-      Async[F].delay(println(line))
+      Sync[F].delay(println(line))
 
     def readLn: F[String] =
-      Async[F].delay(StdIn.readLine)
+      Sync[F].delay(StdIn.readLine)
   }
 }
