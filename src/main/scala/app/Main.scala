@@ -15,15 +15,15 @@ object Main {
 
   def cityByName[F[_] : ErrorHandler](cityName: String): F[City] =
     cityName match {
-      case "Wroclaw" => City(cityName).pure[F]
-      case "Cadiz" => City(cityName).pure[F]
-      case _ => implicitly[ErrorHandler[F]].raiseError(UnknownCity(cityName))
+      case "Wroclaw" ⇒ City(cityName).pure[F]
+      case "Cadiz" ⇒ City(cityName).pure[F]
+      case _ ⇒ implicitly[ErrorHandler[F]].raiseError(UnknownCity(cityName))
     }
 
   type RequestsState[F[_]] = MonadState[F, Requests]
 
   def hottestCity[F[_] : RequestsState]: F[(City, Temperature)] = {
-    implicitly[RequestsState[F]].inspect(reqs =>
+    implicitly[RequestsState[F]].inspect(reqs ⇒
       Requests.hottest(reqs).map(_.temperature)
     )
   }
@@ -77,9 +77,9 @@ object Main {
     implicit val io = Scheduler.io("io-scheduler")
 
     (app.run(requests).value >>= {
-      case Left(error) =>
+      case Left(error) ⇒
         Console.console[Task].printLn(s"Encountered an error: $error")
-      case Right(_) =>
+      case Right(_) ⇒
         ().pure[Task]
     }).runSyncUnsafe()
   }

@@ -14,5 +14,5 @@ object MyApp extends App {
       _ <- printLn(s"Hello, ${n}, good to meet you!")
     } yield ()
 
-  val app = program.either.map(_.fold(_ => 1, _ => 0))
+  val app = program.either.map(_.fold(_ ⇒ 1, _ ⇒ 0))
 }

@@ -26,7 +26,7 @@ object Console extends {
       val readLn: ZIO[Any, IOException, String] =
         IO.effect(StdIn.readLine())
           .refineOrDie {
-            case e: IOException => e
+            case e: IOException ⇒ e
           }
     }
   }
