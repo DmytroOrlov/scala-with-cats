@@ -67,16 +67,15 @@ object ZioApp extends App {
     )
   }
 
-  def run(args: List[String]): UIO[Int] = {
+  def run(args: List[String]) = {
     val conf = Config("localhost", 8080)
     val requests = Requests.empty
 
-    app(requests).provide(
-      new Console.Live
-        with Weather.Live
-        with HasConfig {
+    app(requests).provideSome[Console](c ⇒
+      new Console with Weather.Live with HasConfig {
+        val console = c.console
+
         def apply(v1: Any) = conf
-      }
-    )
+      })
   }
 }
