@@ -30,14 +30,9 @@ object ZioApp extends App {
     }
   }
 
-  val askCity = for {
-    _ <- putStrLn("What is the next city?")
-    cityName <- getStrLn
-  } yield cityName
-
   def askFetchJudge(reqs: Ref[Requests], client: WeatherClient) =
     for {
-      cityName <- askCity
+      cityName <- putStrLn("What is the next city?") *> getStrLn
       city <- cityByName(cityName)
       f <- fetchForecast(client, city, reqs)
       _ <- putStrLn(s"Forecast for $city is ${f.temperature}")
