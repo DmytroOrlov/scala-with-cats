@@ -77,11 +77,13 @@ object Main {
 
     implicit val io = Scheduler.io("io-scheduler")
 
-    (app.run(requests).value >>= {
-      case Left(error) ⇒
-        Console.console[Task].printLn(s"Encountered an error: $error")
-      case Right(_) ⇒
-        ().pure[Task]
-    }).runSyncUnsafe()
+    app.run(requests).value
+      .flatMap {
+        case Left(error) ⇒
+          Console.console[Task].printLn(s"Encountered an error: $error")
+        case Right(_) ⇒
+          ().pure[Task]
+      }
+      .runSyncUnsafe()
   }
 }
