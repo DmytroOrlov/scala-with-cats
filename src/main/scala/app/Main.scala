@@ -34,6 +34,7 @@ object Main {
     cityName match {
       case "Wroclaw" ⇒ City(cityName).pure[F]
       case "Cadiz" ⇒ City(cityName).pure[F]
+      case "Hamburg" ⇒ City(cityName).pure[F]
       case _ ⇒ implicitly[ErrorHandler[F]].raiseError(UnknownCity(cityName))
     }
 
