@@ -2,6 +2,10 @@ package app
 
 import cats.mtl.ApplicativeAsk
 
+sealed trait Error
+
+case class UnknownCity(city: String) extends Error
+
 case class Config(host: String, port: Int)
 
 object Config {
