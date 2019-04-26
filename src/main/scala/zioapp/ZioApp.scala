@@ -30,7 +30,7 @@ object ZioApp extends App {
     }
   }
 
-  def askCity = putStrLn("What is the next city?") *> getStrLn
+  val askCity = putStrLn("What is the next city?") *> getStrLn
 
   def askFetchJudge(reqs: Ref[Requests], client: WeatherClient) =
     for {
