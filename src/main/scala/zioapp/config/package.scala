@@ -1,7 +1,7 @@
 package zioapp
 
 import app.Config
-import scalaz.zio.ZIO
+import scalaz.zio._
 
 package object config {
   type HasConfig = Any ⇒ Config
