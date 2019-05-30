@@ -1,7 +1,7 @@
 package app
 
 import app.Config._
-import cats.data.{EitherT, ReaderT, StateT}
+import cats.data.{EitherT, StateT}
 import cats.implicits._
 import cats.mtl.implicits._
 import cats.mtl.MonadState
@@ -67,9 +67,9 @@ object Main {
     val requests = Requests.empty
 
     type Effect0[A] = EitherT[Task, Error, A]
-    type Effect1[A] = StateT[Effect0, Requests, A]
-    type Effect[A] = ReaderT[Effect1, Config, A]
+    type Effect[A] = StateT[Effect0, Requests, A]
 
+    implicit val configAsk = constantAsk[Effect, Config](config)
     implicit val consoleEffect = Console.console[Effect]
     implicit val weather = Weather.weather[Effect](config)
 
@@ -77,7 +77,7 @@ object Main {
 
     implicit val io = Scheduler.io("io-scheduler")
 
-    app.run(config).run(requests).value
+    app.run(requests).value
       .flatMap {
         case Left(error) ⇒
           Console.console[Task].printLn(s"Encountered an error: $error")
