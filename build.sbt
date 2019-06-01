@@ -3,7 +3,7 @@ import Dependencies._
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.1")
 addCompilerPlugin(("org.scalameta" % "paradise" % "3.0.0-M11").cross(CrossVersion.full))
 
-lazy val zioVersion = "1.0-RC4"
+lazy val zioVersion = "1.0-RC5"
 
 lazy val `scala-with-cats` = (project in file(".")).
   settings(
