@@ -17,12 +17,12 @@ lazy val `scala-with-cats` = (project in file(".")).
       "org.scalaz" %% "scalaz-zio-interop-cats" % zioVersion,
       "org.typelevel" %% "cats-core" % "2.0.0-M2",
       "org.typelevel" %% "cats-mtl-core" % "0.5.0",
-      "org.typelevel" %% "cats-tagless-macros" % "0.2.0",
+      "org.typelevel" %% "cats-tagless-macros" % "0.7",
       "io.monix" %% "monix" % "3.0.0-RC2",
       scalaTest % Test
     ),
     scalacOptions ++= Seq(
       "-Ypartial-unification"
-//      , "-Xfatal-warnings"
+      //, "-Xfatal-warnings"
     )
   )
