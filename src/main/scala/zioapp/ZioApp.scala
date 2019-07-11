@@ -11,12 +11,7 @@ import zioapp.console._
 import zioapp.error.WeatherErr
 import zioapp.weather._
 
-import scala.util.matching.Regex
-import scala.reflect.runtime.universe._
-
 object ZioApp extends App {
-  def typestr[A: WeakTypeTag](x: => A): String = weakTypeOf[A].dealias.widen.toString
-
   def askFetchJudge(reqs: Ref[Requests], client: WeatherClient) =
     for {
       cityName <- askCity
@@ -91,4 +86,9 @@ object ZioApp extends App {
         val config = conf
       })
   }
+
+  import scala.util.matching.Regex
+  import scala.reflect.runtime.universe._
+
+  def typestr[A: WeakTypeTag](x: => A): String = weakTypeOf[A].dealias.widen.toString
 }
