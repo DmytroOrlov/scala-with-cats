@@ -32,7 +32,6 @@ object ZioApp extends App {
     } yield ()
 
     def program = for {
-      _ <- printLn(typestr(makeLoop))
       host <- host
       port <- port
       _ <- printLn(s"Using weather service at http://$host:$port")
@@ -47,9 +46,9 @@ object ZioApp extends App {
 
         def consoleRead(error: IOException): String = s"console read $error"
       }))
-        .const(1),
+        .as(ExitCode.failure),
       _ ⇒ IO
-        .succeed(0)
+        .succeed(ExitCode.success)
     )
   }
 
@@ -60,7 +59,7 @@ object ZioApp extends App {
     for {
       reqs <- requests.get
       maybeForecast = reqs.get(city)
-      forecast <- maybeForecast.fold(forecast(client, city))(IO.succeed)
+      forecast <- maybeForecast.fold(forecast(client, city))(IO.succeed(_))
       _ <- requests.update(_ + (city -> forecast))
     } yield forecast
 
@@ -77,7 +76,7 @@ object ZioApp extends App {
 
   val askCity = printLn("What is the next city?") *> readLn
 
-  def run(args: List[String]): UIO[Int] = {
+  def run(args: List[String]) = {
     val conf = Config("localhost", 8080)
     val requests = Requests.empty
 
@@ -86,9 +85,4 @@ object ZioApp extends App {
         val config = conf
       })
   }
-
-  import scala.util.matching.Regex
-  import scala.reflect.runtime.universe._
-
-  def typestr[A: WeakTypeTag](x: => A): String = weakTypeOf[A].dealias.widen.toString
 }
